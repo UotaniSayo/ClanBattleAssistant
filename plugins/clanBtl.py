@@ -17,7 +17,7 @@ async def askBoss(session: CommandSession):
 	if bossLoc[0]>3 or bossLoc[1]>5:
 		await session.send('guna!')
 		return
-	#bossInfo = open('C:/Users/chrysalis/OneDrive/clanbtl/plugins/boss.csv', 'r')
+	
 	bossInfo = open('./plugins/boss.csv', 'r')
 	reader = csv.reader(bossInfo)
 	for i, rows in enumerate(reader):
