@@ -1,10 +1,13 @@
+from __future__ import unicode_literals
 from nonebot import on_command, CommandSession
 from nonebot.permission import GROUP, PRIVATE_FRIEND
 import re
 import csv
 
+from plugins.getEroPic import getEroPic
+
 #指令：查询boss信息，返回boss的双防
-@on_command('askBoss', aliases=('查boss', '查Boss', '查BOSS'), permission=GROUP | PRIVATE_FRIEND, only_to_me=True)
+@on_command('askBoss', aliases=['查boss', '查Boss', '查BOSS'], permission=GROUP | PRIVATE_FRIEND, only_to_me=True)
 async def askBoss(session: CommandSession):
 	#获取boss名字，如果没有则为 None
 	bossName = session.state['bossName'] if 'bossName' in session.state else None
@@ -50,3 +53,11 @@ async def _(session:CommandSession):
 		session.pause('输入想要查询的boss，阶段数和编号用半角数字')
 		
 	session.state[session.current_key] = stripped_arg
+	
+#指令：请求色图，该指令无参数
+@on_command('eroPic', aliases=['色图', '涩图'], permission=GROUP | PRIVATE_FRIEND, only_to_me=True)
+async def eroPic(session: CommandSession):
+	pic = getEroPic()
+	#经URL发送图片
+	#coolQ air版本不支持发图片
+	await session.send(f'[CQ:image, file={pic}]')
