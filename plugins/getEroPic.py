@@ -22,7 +22,7 @@ def getEroPic() -> str:
     
     picFormat = re.findall('.[a-zA-Z]+$', picUrl)
     picName = randint(1000, 10000000)
-    picAddr = 'E:/test/{0}'.format(picName)+picFormat[0]
+    picAddr = '/plugins/eroPic/{0}'.format(picName)+picFormat[0]
     with open(picAddr, 'wb') as handle:
         handle.write(picDat)
     
