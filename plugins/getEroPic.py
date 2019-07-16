@@ -18,12 +18,13 @@ def getEroPic() -> str:
         picUrl = post['source']
         
     picUrl = re.sub('^https', 'http', picUrl, count=1)
-    picDat = requests.get(picUrl).content
+	#改为返回图片的url
+    # picDat = requests.get(picUrl).content
     
-    picFormat = re.findall('.[a-zA-Z]+$', picUrl)
-    picName = randint(1000, 10000000)
-    picAddr = '/plugins/eroPic/{0}'.format(picName)+picFormat[0]
-    with open(picAddr, 'wb') as handle:
-        handle.write(picDat)
+    # picFormat = re.findall('.[a-zA-Z]+$', picUrl)
+    # picName = randint(1000, 10000000)
+    # picAddr = './plugins/eroPic/{0}'.format(picName)+picFormat[0]
+    # with open(picAddr, 'wb') as handle:
+        # handle.write(picDat)
     
-    return picAddr
+    return picUrl
