@@ -4,7 +4,10 @@
 
 from __future__ import unicode_literals
 import pickle
+import random
 class NekoBot:
+    #bot唯一ID
+    botID = '{0}'.format(random.randint(1000,10000000))
     #公会群号
     groupNo = '0'
     #公会成员列表
@@ -17,16 +20,18 @@ class NekoBot:
     debugMode = True
     
     def saveCfg(self):
-        cfgFile = open('./plugins/nekobot.cfg', 'wb')
+#        cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'wb')
+        cfgFile = open('{0}.cfg'.format(self.botID), 'wb')
         pickle.dump(self, cfgFile)
         cfgFile.close()
         
-    def loadCfg():
+    def loadCfg(self):
         try:
-            cfgFile = open('./plugins/nekobot.cfg', 'wb')
+#            cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'rb')
+            cfgFile = open('{0}.cfg'.format(self.botID), 'rb')
             newBot = pickle.load(cfgFile)
             cfgFile.close()
             return newBot
         except:
             return False
-#临时
+    
