@@ -20,15 +20,13 @@ class NekoBot:
     debugMode = True
     
     def saveCfg(self):
-#        cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'wb')
-        cfgFile = open('{0}.cfg'.format(self.botID), 'wb')
+        cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'wb')
         pickle.dump(self, cfgFile)
         cfgFile.close()
         
     def loadCfg(self):
         try:
-#            cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'rb')
-            cfgFile = open('{0}.cfg'.format(self.botID), 'rb')
+            cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'rb')
             newBot = pickle.load(cfgFile)
             cfgFile.close()
             return newBot
