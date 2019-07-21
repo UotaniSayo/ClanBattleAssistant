@@ -1,3 +1,10 @@
+#assist.py
+#辅助指令，与公会战报刀查刀功能不直接相关
+#目前指令：
+#查询boss信息
+#发色图（未测试）
+
+
 from __future__ import unicode_literals
 from nonebot import on_command, CommandSession
 from nonebot.permission import GROUP, PRIVATE_FRIEND
@@ -61,3 +68,4 @@ async def eroPic(session: CommandSession):
 	#经URL发送图片
 	#coolQ air版本不支持发图片
 	await session.send(f'[CQ:image, file={pic}]')
+    
