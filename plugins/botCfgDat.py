@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import pickle
 import random
-class NekoBot:
+class MadaBot:
     #bot唯一ID
     botID = '{0}'.format(random.randint(1000,10000000))
     #公会群号
@@ -16,17 +16,21 @@ class NekoBot:
     allowMbrSelfAdd = False
     #公会成员群昵称标签
     mbrTag = ''
+    #允许报刀不提供伤害
+    allowNoDmgRpt = True
     #测试模式
     debugMode = True
     
     def saveCfg(self):
-        cfgFile = open('./plugins/{0}.cfg'.format(self.botID), 'wb')
+#        cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'wb')
+        cfgFile = open('{0}.cfg'.format(self.botID), 'wb')
         pickle.dump(self, cfgFile)
         cfgFile.close()
         
     def loadCfg(self):
         try:
-            cfgFile = open('./plugins/{0}.cfg'.format(self.botID), 'rb')
+#            cfgFile = open('./plugins/{0}.cfg'.format(self.groupNo), 'rb')
+            cfgFile = open('{0}.cfg'.format(self.botID), 'rb')
             newBot = pickle.load(cfgFile)
             cfgFile.close()
             return newBot
