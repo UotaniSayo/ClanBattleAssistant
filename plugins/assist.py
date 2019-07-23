@@ -20,7 +20,13 @@ async def askBoss(session: CommandSession):
 	bossName = session.state['bossName'] if 'bossName' in session.state else None
 	#没有输入boss名字时，提示输入
 	if not bossName:
-		bossName = session.get('bossName', prompt='输入想要查询的boss，阶段数和编号用半角数字')
+		bossName = session.get('bossName', prompt='输入想要查询的boss的阶段数和编号')
+	#将汉字替换为数字
+	bossName = re.sub('一', '1', bossName)
+	bossName = re.sub('二', '2', bossName)
+	bossName = re.sub('三', '3', bossName)
+	bossName = re.sub('四', '4', bossName)
+	bossName = re.sub('五', '5', bossName)
 	bossLocStr = re.findall('[0-9]', bossName)
 	
 	#boss名字第一次检查，确认有两个数字
