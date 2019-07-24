@@ -19,15 +19,18 @@ allBotInstance = {}
 @on_command('addGroup', aliases=['注册', '登录', '登陆'], permission=GROUP_ADMIN, only_to_me=True)
 async def addGroup(session: CommandSession):
 	#获取群号
-	groupNo = session.ctx['group_id']
-	groupNo = str(groupNo)
+    groupNo = session.ctx['group_id']
+    groupNo = str(groupNo)
+    if groupNo in allBotInstance.keys():
+       await session.send('该群已经注册，不要重复操作哦')
+       return
 	#新建bot实例
-	newBot = MadaBot()
-	newBot.groupNo = groupNo
-	allBotInstance[groupNo] = newBot
+    newBot = MadaBot()
+    newBot.groupNo = groupNo
+    allBotInstance[groupNo] = newBot
 	
-	succeed = '已添加群'+groupNo
-	await session.send(succeed)
+    succeed = '已添加群'+groupNo
+    await session.send(succeed)
 	
 #指令：注销公会群
 #将发消息的群从实例list中移除，该指令无参数
@@ -71,12 +74,26 @@ async def updateClanMbr(session: CommandSession):
 		await session.send('该群尚未注册，请先注册哦')
 		return
 	
-	botApi = nonebot.get_bot()
-	try:
-        #这部分有问题
-		mbrList = await botApi.get_group_member_list(int(groupNo))
-		answer = str(type(mbrList))
-	except CQHttpError:
-		raise
+	thisBot = allBotInstance[groupNo]
 	
-	await session.send(answer)
+	botApi = nonebot.get_bot()
+	thisBot.clanMbr = []
+	mbrList = []
+	try:
+        #获取群成员列表，格式为list[dict]
+		mbrList = await botApi.get_group_member_list(group_id=int(groupNo))
+	except:
+		await session.send('出错啦，再试一下咯')
+		return
+	
+	for user in mbrList:
+		if re.search(thisBot.mbrTag, user['card']):
+			thisBot.clanMbr.append(str(user['user_id']))
+			
+	if len(thisBot.clanMbr) > 30:
+		thisBot.clanMbr = []
+		await session.send('失败：成员超过30个，请检查标签')
+		return
+	
+	result = '更新完成，目前有{0}成员。'.format(len(thisBot.clanMbr))
+	await session.send(result)
