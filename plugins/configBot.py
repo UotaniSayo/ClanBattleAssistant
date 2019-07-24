@@ -19,18 +19,18 @@ allBotInstance = {}
 @on_command('addGroup', aliases=['注册', '登录', '登陆'], permission=GROUP_ADMIN, only_to_me=True)
 async def addGroup(session: CommandSession):
 	#获取群号
-    groupNo = session.ctx['group_id']
-    groupNo = str(groupNo)
-    if groupNo in allBotInstance.keys():
-       await session.send('该群已经注册，不要重复操作哦')
-       return
+	groupNo = session.ctx['group_id']
+	groupNo = str(groupNo)
+	if groupNo in allBotInstance.keys():
+		await session.send('该群已经注册，不要重复操作哦')
+		return
 	#新建bot实例
-    newBot = MadaBot()
-    newBot.groupNo = groupNo
-    allBotInstance[groupNo] = newBot
+	newBot = MadaBot()
+	newBot.groupNo = groupNo
+	allBotInstance[groupNo] = newBot
 	
-    succeed = '已添加群'+groupNo
-    await session.send(succeed)
+	succeed = '已添加群'+groupNo
+	await session.send(succeed)
 	
 #指令：注销公会群
 #将发消息的群从实例list中移除，该指令无参数
