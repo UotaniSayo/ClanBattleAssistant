@@ -14,6 +14,7 @@ import csv
 from plugins.getEroPic import getEroPic
 
 #指令：查询boss信息，返回boss的双防
+#可选参数：boss的阶段数和编号
 @on_command('askBoss', aliases=['查boss', '查Boss', '查BOSS'], permission=GROUP | PRIVATE_FRIEND, only_to_me=True)
 async def askBoss(session: CommandSession):
 	#获取boss名字，如果没有则为 None
@@ -42,7 +43,7 @@ async def askBoss(session: CommandSession):
 		return
 	
 	#读取boss信息
-	bossInfo = open('./plugins/boss.csv', 'r')
+	bossInfo = open('./plugins/bossInfo.csv', 'r')
 	reader = csv.reader(bossInfo)
 	for i, rows in enumerate(reader):
 		if i == bossIndex:
@@ -63,7 +64,8 @@ async def _(session:CommandSession):
 		return
 		
 	if not stripped_arg:
-		session.pause('输入想要查询的boss，阶段数和编号用半角数字')
+		session.pause('')
+		#continue
 		
 	session.state[session.current_key] = stripped_arg
 	
@@ -75,3 +77,74 @@ async def eroPic(session: CommandSession):
 	#coolQ air版本不支持发图片
 	await session.send(f'[CQ:image, file={pic}]')
     
+#指令：boss作业，查询或者分享作业
+#参数：boss信息 作业内容（可选）
+@on_command('reference', aliases=['作业'], permission=GROUP | PRIVATE_FRIEND, only_to_me=True, shell_like=True)
+async def reference(session: CommandSession):
+	#检查参数数量
+	cmdArgs = session.args['argv']
+	
+	#获取boss名字
+	bossName = cmdArgs[0]
+	share = False
+	#有两个参数，则为分享作业
+	#如果因为输入空格而存在更多的参数，将后面参数合并
+	if len(cmdArgs) >= 2:
+		reference = str(cmdArgs[1:len(cmdArgs)])
+		reference = re.sub('\[|\]', '', reference)
+		share = True
+		
+	#将汉字替换为数字
+	bossName = re.sub('一', '1', bossName)
+	bossName = re.sub('二', '2', bossName)
+	bossName = re.sub('三', '3', bossName)
+	bossName = re.sub('四', '4', bossName)
+	bossName = re.sub('五', '5', bossName)
+	bossLocStr = re.findall('[0-9]', bossName)
+	
+	#boss名字第一次检查，确认有两个数字
+	if len(bossLocStr) != 2:
+		await session.send('boss信息有误，请重新输入')
+		return
+	bossLoc = [int(bossLocStr[0]), int(bossLocStr[1])]
+	bossIndex = 5*(bossLoc[0]-1)+bossLoc[1]
+	
+	#boss名字第二次检查，确认阶段数和编号未超出范围
+	if bossLoc[0]>3 or bossLoc[0]<1 or bossLoc[1]>5 or bossLoc[1]<1:
+		await session.send('boss信息有误，请重新输入')
+		return
+	
+	#如果是查询作业，则打开文件读取
+	#可能有多个作业，因此做成list
+	ref = []
+	if not share:
+		refInfo = open('./plugins/bossReference.csv', 'r')
+		reader = csv.reader(refInfo)
+		for row in reader:
+			if row[0] == str(bossIndex):
+				ref.append(row[1])
+				
+		#检查是否有作业
+		if len(ref) == 0:
+			session.send('这个boss还没有作业哦')
+			return
+			
+		#合并作业
+		reply = bossLocStr[0]+'阶段'+bossLocStr[1]+'号作业：\n'
+		for i in ref:
+			reply = reply + i + '\n'
+		
+	#如果是分享作业，则打开文件写入
+	if share:
+		refInfo = open('./plugins/bossReference.csv', 'a')
+		refInfo.write('\n'+reference)
+		reply = bossLocStr[0]+'阶段'+bossLocStr[1]+'号作业添加完成'
+		
+	try:
+		refInfo.close()
+	except:
+		continue
+		
+	#根据信息生成回复内容
+	await session.send(reply)
+	
