@@ -97,7 +97,8 @@ async def reference(session: CommandSession):
 	#如果因为输入空格而存在更多的参数，将后面参数合并
 	if len(cmdArgs) >= 2:
 		reference = str(cmdArgs[1:len(cmdArgs)])
-		reference = re.sub('\[|\]|,', '', reference)
+		reference = re.sub('\[|\]', '', reference)
+		reference = re.sub(',', '.', reference)
 		share = True
 		
 	#将汉字替换为数字
