@@ -87,11 +87,17 @@ async def reference(session: CommandSession):
 	#获取boss名字
 	bossName = cmdArgs[0]
 	share = False
+	
+	#没有参数，则退出指令
+	if len(cmdArgs) == 0:
+		await session.send('boss信息有误，请重新输入')
+		return
+	
 	#有两个参数，则为分享作业
 	#如果因为输入空格而存在更多的参数，将后面参数合并
 	if len(cmdArgs) >= 2:
 		reference = str(cmdArgs[1:len(cmdArgs)])
-		reference = re.sub('\[|\]', '', reference)
+		reference = re.sub('\[|\]|,', '', reference)
 		share = True
 		
 	#将汉字替换为数字
@@ -121,29 +127,36 @@ async def reference(session: CommandSession):
 		refInfo = open('./plugins/bossReference.csv', 'r')
 		reader = csv.reader(refInfo)
 		for row in reader:
-			if row[0] == str(bossIndex):
-				ref.append(row[1])
+			#避免空白行报错，使用try来读内容
+			try:
+				if row[0] == str(bossIndex):
+					ref.append(row[1])
+			except:
+				continue
 				
 		#检查是否有作业
 		if len(ref) == 0:
-			session.send('这个boss还没有作业哦')
+			await session.send('这个boss还没有作业哦')
 			return
 			
 		#合并作业
-		reply = bossLocStr[0]+'阶段'+bossLocStr[1]+'号作业：\n'
+		reply = bossLocStr[0]+'阶段'+bossLocStr[1]+'号作业：'
 		for i in ref:
-			reply = reply + i + '\n'
+			i = re.sub('\'','',i)
+			reply = reply + '\n' + i
 		
 	#如果是分享作业，则打开文件写入
 	if share:
+		uploadUser = session.ctx['sender']['card']
 		refInfo = open('./plugins/bossReference.csv', 'a')
-		refInfo.write('\n'+reference)
+		thisRef = '\n'+str(bossIndex)+','+reference+' by '+uploadUser
+		refInfo.write(thisRef)
 		reply = bossLocStr[0]+'阶段'+bossLocStr[1]+'号作业添加完成'
 		
 	try:
 		refInfo.close()
 	except:
-		continue
+		pass
 		
 	#根据信息生成回复内容
 	await session.send(reply)
