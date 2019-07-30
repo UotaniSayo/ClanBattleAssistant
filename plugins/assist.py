@@ -104,7 +104,7 @@ async def reference(session: CommandSession):
 	#查看当前所有作业
 	if cmdArgs[0] in ['all','全部','所有']:
 		if not session.ctx['sender']['role'] in ['owner','admin']:
-			session.send('只有管理员才能查看所有作业哦')
+			await session.send('只有管理员才能查看所有作业哦')
 			return
 		allRef = []
 		refInfo = open('./plugins/bossReference.csv', 'r')
@@ -113,27 +113,27 @@ async def reference(session: CommandSession):
 			allRef.append(row)
 		#检查是否有作业
 		if len(allRef) == 1:
-			session.send('目前还没有任何作业哦')
+			await session.send('目前还没有任何作业哦')
 			return
 			
 		#删除首行，排序
-		allRef = del(allRef[0])
+		del(allRef[0])
 		allRef = sorted(allRef)
 		
 		#按index拆分作业
 		reply = '所有作业：'
-		for r in range(1:4):
-			for n in range(1:6):
+		for r in range(1,4):
+			for n in range(1,6):
 				thisIndex = str(5*(r-1)+n)
-				thisRef = [refList for refList in allRef if refList[0]==thisIndex]
+				thisRefList = [refList for refList in allRef if refList[0]==thisIndex]
 				reply = reply + '\n' + str(r) + '阶段' + str(n) + '号作业：'
-				if len(thisRef) == 0:
+				if len(thisRefList) == 0:
 					reply = reply + '\n这个boss还没有作业哦'
 					continue
-				for i in thisRef:
-					i = re.sub('\'', '', i)
-					reply = reply + '\n' + i
-		session.send(reply)
+				for i in thisRefList:
+					thisRef = re.sub('\'','',i[2])
+					reply = reply + '\n' + i[1] + ':' + thisRef
+		await session.send(reply)
 		return
 		
 		
@@ -181,7 +181,7 @@ async def reference(session: CommandSession):
 			#避免空白行报错，使用try来读内容
 			try:
 				if row[0] == str(bossIndex):
-					ref.append(row[1]+':'row[2])
+					ref.append(row[1]+':'+row[2])
 			except:
 				continue
 				
