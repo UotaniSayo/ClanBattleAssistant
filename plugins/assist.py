@@ -137,6 +137,10 @@ async def reference(session: CommandSession):
 					reply = reply + '\n' + str(i[1]) + '：' + thisRef
 		await session.send(reply)
 		return
+	
+	#删除作业
+	if cmdArgs[0] in ['del','删除','删掉']:
+		
 		
 		
 	#如果不是，则为查询或分享作业
@@ -202,11 +206,19 @@ async def reference(session: CommandSession):
 	if share:
 		uploadUser = session.ctx['sender']['card']
 		
-		#获取当前文件内容行数
+		#获取当前文件内容行数，以及末行作业编号（防止编号与行数不一致）
 		#需要先以read模式打开
 		refInfo = open('./plugins/bossReference.csv', 'r')
-		lineCnt = sum(1 for line in refInfo)
+		reader = csv.reader(refInfo)
+		lineCnt = 0
+		for row in reader:
+			lineCnt += 1
+			lastNo = int(row[1])
+		
 		refInfo.close()
+		#如果行数>1，说明已经存在作业，将行数改为末行编号
+		if lineCnt > 1:
+			lineCnt = lastNo
 		
 		#重新打开
 		refInfo = open('./plugins/bossReference.csv', 'a')
