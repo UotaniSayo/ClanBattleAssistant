@@ -116,15 +116,17 @@ async def reference(session: CommandSession):
 			await session.send('目前还没有任何作业哦')
 			return
 			
-		#删除首行，排序
+		#删除首行，将boss编号和作业编号转成数字，排序
 		del(allRef[0])
+		for l in allRef:
+			l[0:2]=[int(x) for x in l[0:2]]
 		allRef = sorted(allRef)
 		
 		#按index拆分作业
 		reply = '所有作业：'
 		for r in range(1,4):
 			for n in range(1,6):
-				thisIndex = str(5*(r-1)+n)
+				thisIndex = 5*(r-1)+n
 				thisRefList = [refList for refList in allRef if refList[0]==thisIndex]
 				reply = reply + '\n' + str(r) + '阶段' + str(n) + '号作业：'
 				if len(thisRefList) == 0:
@@ -132,7 +134,7 @@ async def reference(session: CommandSession):
 					continue
 				for i in thisRefList:
 					thisRef = re.sub('\'','',i[2])
-					reply = reply + '\n' + i[1] + ':' + thisRef
+					reply = reply + '\n' + str(i[1]) + '：' + thisRef
 		await session.send(reply)
 		return
 		
@@ -181,7 +183,7 @@ async def reference(session: CommandSession):
 			#避免空白行报错，使用try来读内容
 			try:
 				if row[0] == str(bossIndex):
-					ref.append(row[1]+':'+row[2])
+					ref.append(row[1]+'：'+row[2])
 			except:
 				continue
 				
