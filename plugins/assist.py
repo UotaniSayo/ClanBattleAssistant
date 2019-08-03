@@ -139,8 +139,39 @@ async def reference(session: CommandSession):
 		return
 	
 	#删除作业
-	if cmdArgs[0] in ['del','删除','删掉']:
+	if cmdArgs[0] in ['del','删除','删掉','清除']:
+		if not session.ctx['sender']['role'] in ['owner','admin']:
+			await session.send('只有管理员才能删除作业哦')
+			return
+		delRow = cmdArgs[1]
+		allRef = []
 		
+		refInfo = open('./plugins/bossReference.csv', 'r')
+		reader = csv.reader(refInfo)
+		for row in reader:
+			allRef.append(row)
+		refInfo.close()
+		
+		refInfo = open('./plugins/bossReference.csv', 'w', newline='')
+		writer = csv.writer(refInfo)
+		for i in range(0,len(allRef)):
+			if allRef[i][1] != delRow:
+				writer.writerow(allRef[i])
+		refInfo.close()
+		reply = '已删除作业' + delRow
+		await session.send(reply)
+		return
+		
+	#清空作业
+	if cmdArgs[0] in ['clear','清空','全删']:
+		if not session.ctx['sender']['role'] in ['owner','admin']:
+			await session.send('只有管理员才能删除作业哦')
+			return
+		refInfo = open('./plugins/bossReference.csv', 'w', newline='')
+		refInfo.write('boss索引,作业编号,作业内容')
+		refInfo.close()
+		await session.send('已删除所有作业')
+		return
 		
 		
 	#如果不是，则为查询或分享作业
