@@ -168,7 +168,7 @@ async def reference(session: CommandSession):
 			await session.send('只有管理员才能删除作业哦')
 			return
 		refInfo = open('./plugins/bossReference.csv', 'w', newline='')
-		refInfo.write('boss索引,作业编号,作业内容')
+		refInfo.write('boss索引,作业编号,作业内容\n')
 		refInfo.close()
 		await session.send('已删除所有作业')
 		return
@@ -244,16 +244,19 @@ async def reference(session: CommandSession):
 		lineCnt = 0
 		for row in reader:
 			lineCnt += 1
-			lastNo = int(row[1])
+			try:
+				lastNo = int(row[1])
+			except:
+				pass
 		
 		refInfo.close()
 		#如果行数>1，说明已经存在作业，将行数改为末行编号
 		if lineCnt > 1:
-			lineCnt = lastNo
+			lineCnt = lastNo+1
 		
 		#重新打开
 		refInfo = open('./plugins/bossReference.csv', 'a')
-		thisRef = '\n'+str(bossIndex)+','+str(lineCnt)+','+reference+' by '+uploadUser
+		thisRef = str(bossIndex)+','+str(lineCnt)+','+reference+' by '+uploadUser+'\n'
 		refInfo.write(thisRef)
 		reply = bossLocStr[0]+'阶段'+bossLocStr[1]+'号作业：'+str(lineCnt)+'添加完成'
 		
