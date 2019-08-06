@@ -3,6 +3,7 @@
 #目前指令：
 #查询boss信息
 #发色图（未测试）
+#查询，添加，删除作业
 
 
 from __future__ import unicode_literals
@@ -244,6 +245,7 @@ async def reference(session: CommandSession):
 		lineCnt = 0
 		for row in reader:
 			lineCnt += 1
+			#首行（标题行）第二列元素为汉字，因此转int时使用try
 			try:
 				lastNo = int(row[1])
 			except:
