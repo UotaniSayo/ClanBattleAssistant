@@ -79,6 +79,7 @@ async def eroPic(session: CommandSession):
 	await session.send(f'[CQ:image, file={pic}]')
     
 #指令：boss作业，查询或者分享作业
+#作业文件分群
 #参数：boss信息 作业内容（可选）
 #管理员参数：查看当前所有作业，清空作业，删除特定作业
 #指令形式：@bot 作业 参数一 参数二
@@ -99,6 +100,20 @@ async def reference(session: CommandSession):
 		await session.send('boss信息有误，请重新输入')
 		return
 	
+	#获取群号并拼出作业文件名（含路径）
+	groupNo = session.ctx['group_id']
+	groupNo = str(groupNo)
+	refAddr = './plugins/bossReference_' + groupNo + '.csv'
+	
+	#验证该文件是否存在，若不存在则新建
+	try:
+		refInfo = open(refAddr, 'r')
+		refInfo.close()
+	except:
+		refInfo = open(refAddr, 'w', newline='')
+		refInfo.write('boss索引,作业编号,作业内容\n')
+		refInfo.close()
+	
 	#有两个参数，先检查第一个参数是否为管理员参数
 	#如果是，则执行管理员指令
 	#管理员指令有独立出口(return)
@@ -108,7 +123,7 @@ async def reference(session: CommandSession):
 			await session.send('只有管理员才能查看所有作业哦')
 			return
 		allRef = []
-		refInfo = open('./plugins/bossReference.csv', 'r')
+		refInfo = open(refAddr, 'r')
 		reader = csv.reader(refInfo)
 		for row in reader:
 			allRef.append(row)
@@ -147,13 +162,13 @@ async def reference(session: CommandSession):
 		delRow = cmdArgs[1]
 		allRef = []
 		
-		refInfo = open('./plugins/bossReference.csv', 'r')
+		refInfo = open(refAddr, 'r')
 		reader = csv.reader(refInfo)
 		for row in reader:
 			allRef.append(row)
 		refInfo.close()
 		
-		refInfo = open('./plugins/bossReference.csv', 'w', newline='')
+		refInfo = open(refAddr, 'w', newline='')
 		writer = csv.writer(refInfo)
 		for i in range(0,len(allRef)):
 			if allRef[i][1] != delRow:
@@ -168,7 +183,7 @@ async def reference(session: CommandSession):
 		if not session.ctx['sender']['role'] in ['owner','admin']:
 			await session.send('只有管理员才能删除作业哦')
 			return
-		refInfo = open('./plugins/bossReference.csv', 'w', newline='')
+		refInfo = open(refAddr, 'w', newline='')
 		refInfo.write('boss索引,作业编号,作业内容\n')
 		refInfo.close()
 		await session.send('已删除所有作业')
@@ -213,7 +228,7 @@ async def reference(session: CommandSession):
 	#csv每行内容顺序：boss索引，作业编号（行数），作业内容
 	ref = []
 	if not share:
-		refInfo = open('./plugins/bossReference.csv', 'r')
+		refInfo = open(refAddr, 'r')
 		reader = csv.reader(refInfo)
 		for row in reader:
 			#避免空白行报错，使用try来读内容
@@ -240,7 +255,7 @@ async def reference(session: CommandSession):
 		
 		#获取当前文件内容行数，以及末行作业编号（防止编号与行数不一致）
 		#需要先以read模式打开
-		refInfo = open('./plugins/bossReference.csv', 'r')
+		refInfo = open(refAddr, 'r')
 		reader = csv.reader(refInfo)
 		lineCnt = 0
 		for row in reader:
@@ -257,7 +272,7 @@ async def reference(session: CommandSession):
 			lineCnt = lastNo+1
 		
 		#重新打开
-		refInfo = open('./plugins/bossReference.csv', 'a')
+		refInfo = open(refAddr, 'a')
 		thisRef = str(bossIndex)+','+str(lineCnt)+','+reference+' by '+uploadUser+'\n'
 		refInfo.write(thisRef)
 		reply = bossLocStr[0]+'阶段'+bossLocStr[1]+'号作业：'+str(lineCnt)+'添加完成'
